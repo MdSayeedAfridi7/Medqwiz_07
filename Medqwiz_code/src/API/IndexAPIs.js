@@ -1,6 +1,6 @@
 import axios from "axios";
 import { setCCStep3PostAPI } from "../store/CCStep3PostSlice";
-import { setCCStep3GetAPI } from "../store/CCStep3GetSlice";
+import { AddCCStep3CardDetails, deleteCCStep3CardDetails, setCCStep3GetAPI, uploadCCStep3CardDetails } from "../store/CCStep3GetSlice";
 import { setCCStepsTF } from "../store/CCStepT_F_Slice";
 import { setCCStep3AddAPI } from "../store/CCStep3AddSlice";
 
@@ -72,10 +72,6 @@ export const CCStep3GetAPI = (params) => {
 }
 
 
-
-
-
-
 export const CCStep3AddAPI = (addStep3Payload) => {
     return (dispatch) => {
         const options = {
@@ -88,9 +84,45 @@ export const CCStep3AddAPI = (addStep3Payload) => {
 
         axios.post("https://api-dev.medqwiz.com/v1/camp/card/add", addStep3Payload, options)
             .then((res) => {
-                dispatch(setCCStep3AddAPI(res))
+                dispatch(AddCCStep3CardDetails(res))
                 console.log(res);
             })
             .catch(err => console.log(err))
     }
 }
+
+
+
+export const CCStep3DeleteAPI = (deletePayload, id, cardState, { setCardState }) => {
+    return (dispatch) => {
+        const options = {
+            headers: {
+                Authorization: "Bearer " + localStorage.getItem("token")
+            }
+        }
+        // console.log(payload);
+        axios.post("https://api-dev.medqwiz.com/v1/camp/card/image/delete", deletePayload, options)
+            .then((res) => {
+                dispatch(deleteCCStep3CardDetails({ res, deletePayload, id }))
+                setCardState({ ...cardState, media: cardState?.media?.filter((medialist) => medialist?.id !== deletePayload?.id) })
+                console.log(res, deletePayload);
+            })
+            .catch(err => console.log(err))
+    }
+}
+export const CCStep3UploadAPI = (formData) => {
+    return (dispatch) => {
+        const options = {
+            headers: {
+                Authorization: "Bearer " + localStorage.getItem("token")
+            }
+        }
+        // console.log(payload);
+        axios.post("https://api-dev.medqwiz.com/v1/camp/card/image/upload", formData, options)
+            .then((res) => {
+                dispatch(uploadCCStep3CardDetails(res))
+            })
+            .catch(err => console.log(err))
+    }
+}
+

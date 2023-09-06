@@ -18,7 +18,7 @@ const CCStep2 = () => {
 
     useEffect(() => {
         dispatch(CCStep2API(params.id))
-        dispatch(CCStep3GetAPI(params.id))
+        // dispatch(CCStep3GetAPI(params.id))
     }, [])
 
     console.log(params)

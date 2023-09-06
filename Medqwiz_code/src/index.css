@@ -647,6 +647,10 @@ code {
   background: #fff !important;
 }
 
+.bg_meddqwiz {
+  background-color: #f8f8f8 !important;
+}
+
 .dark_violet_bg {
   background-color: #77529f !important;
 }
@@ -715,10 +719,21 @@ code {
   background-color: rgba(255, 0, 0, 0.1);
 }
 
+.bd_transparent_red {
+  background-color: rgba(255, 0, 0, 0.1) !important;
+}
+
+.serach_div button:hover {
+  background-color: rgba(255, 0, 0, 0.1) !important;
+}
 
 /* S3 tabs */
 .activeS3_tab {
-  border: 2px solid #77529f !important;
+  border: 1px solid #77529f !important;
+}
+
+.border_grey {
+  border: 1px solid rgb(208, 206, 206)
 }
 
 
@@ -733,7 +748,29 @@ code {
   cursor: pointer;
 }
 
+/* filter_dropdown */
+.filter_dropdown button:hover {
+  background-color: #d7cce2 !important;
+}
 
+
+/* active_table_column */
+.active_table_column {
+  position: relative;
+}
+
+.active_table_spinner {
+  position: absolute;
+  top: 34px;
+  right: 50%;
+}
+
+/* active table spinner */
+.active_table_column .spinner-border {
+  --bs-spinner-border-width: 0.12em !important;
+  border-color: rebeccapurple !important;
+  border-right-color: transparent !important; 
+}
 
 /* Media queries */
 

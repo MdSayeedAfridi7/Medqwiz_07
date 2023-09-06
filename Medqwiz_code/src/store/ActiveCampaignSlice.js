@@ -5,6 +5,7 @@ const ActiveCampaignSlice = createSlice({
     initialState: [],
     reducers: {
         setActiveCampaign: (state,action) => {
+            console.log(action?.payload);
             return action.payload
         },
     }
