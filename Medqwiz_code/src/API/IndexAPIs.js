@@ -93,34 +93,44 @@ export const CCStep3AddAPI = (addStep3Payload) => {
 
 
 
-export const CCStep3DeleteAPI = (deletePayload, id, cardState, { setCardState }) => {
+export const CCStep3DeleteAPI = (deletePayload, id, cardState, { setCardState }, { setLoader }) => {
     return (dispatch) => {
         const options = {
             headers: {
                 Authorization: "Bearer " + localStorage.getItem("token")
             }
         }
+
+        setLoader(true)
         // console.log(payload);
         axios.post("https://api-dev.medqwiz.com/v1/camp/card/image/delete", deletePayload, options)
             .then((res) => {
                 dispatch(deleteCCStep3CardDetails({ res, deletePayload, id }))
                 setCardState({ ...cardState, media: cardState?.media?.filter((medialist) => medialist?.id !== deletePayload?.id) })
                 console.log(res, deletePayload);
+                setLoader(false)
             })
             .catch(err => console.log(err))
     }
 }
-export const CCStep3UploadAPI = (formData) => {
+export const CCStep3UploadAPI = (formData, id, cardState, { setCardState }, { setLoader }) => {
     return (dispatch) => {
         const options = {
             headers: {
                 Authorization: "Bearer " + localStorage.getItem("token")
             }
         }
-        // console.log(payload);
+
+        setLoader(true)
+
+        console.log(formData);
         axios.post("https://api-dev.medqwiz.com/v1/camp/card/image/upload", formData, options)
             .then((res) => {
-                dispatch(uploadCCStep3CardDetails(res))
+                console.log({ res });
+                console.log("upload_dispatch", { res, formData, id });
+                dispatch(uploadCCStep3CardDetails({ res, formData, id }))
+                setCardState({ ...cardState, media: cardState?.media?.concat(res?.data) })
+                setLoader(false)
             })
             .catch(err => console.log(err))
     }

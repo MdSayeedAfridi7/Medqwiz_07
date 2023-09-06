@@ -8,13 +8,10 @@ const CCStep3GetSlice = createSlice({
             return action?.payload?.data
         },
         AddCCStep3CardDetails: (state, action) => {
-            console.log("adding", action?.payload?.data)
             return state?.concat(action?.payload?.data)
         },
 
         deleteCCStep3CardDetails: (state, action) => {
-            console.log("deleting", action?.payload?.deletePayload)
-            console.log("id", action?.payload?.id);
 
             return state?.map((item) => {
                 if (item?.id === action?.payload?.id) {
@@ -28,7 +25,21 @@ const CCStep3GetSlice = createSlice({
         },
 
         uploadCCStep3CardDetails: (state, action) => {
-            console.log("upload");
+
+            return state?.map((item) => {
+                if (item?.id === action?.payload?.id) {
+                    return { ...item, media: item?.media?.concat(action?.payload?.res?.data) }
+                } else {
+                    return (
+                        item
+                    )
+                }
+            })
+        },
+
+        setContextCardDetails: (state, action) => {
+            console.log("context", action?.payload);
+            // return ()
         },
 
         setCCStep3GetAPIReset: (state, action) => {
@@ -37,7 +48,7 @@ const CCStep3GetSlice = createSlice({
     }
 })
 
-export const { setCCStep3GetAPI, AddCCStep3CardDetails, setCCStep3GetAPIReset, deleteCCStep3CardDetails, uploadCCStep3CardDetails } = CCStep3GetSlice.actions
+export const { setCCStep3GetAPI, AddCCStep3CardDetails, setCCStep3GetAPIReset, deleteCCStep3CardDetails, uploadCCStep3CardDetails, setContextCardDetails } = CCStep3GetSlice.actions
 export default CCStep3GetSlice.reducer
 
 

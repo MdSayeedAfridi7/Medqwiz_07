@@ -1,6 +1,6 @@
 import React, { useState } from 'react'
 import { setCCStepsTF, setCCStepsTFReset } from '../store/CCStepT_F_Slice';
-import { Button, Col, Input, InputGroup, InputGroupText, Nav, NavItem, NavLink, Row } from 'reactstrap';
+import { Button, Col, Input, InputGroup, InputGroupText, Nav, NavItem, NavLink, Row, Spinner } from 'reactstrap';
 import { BiArrowBack } from 'react-icons/bi';
 import { IoArrowForward, IoCloseOutline } from 'react-icons/io5';
 import { useDispatch, useSelector } from 'react-redux';
@@ -19,6 +19,7 @@ import benefits_img from "../assets/eye_with_drop.jpg"
 import img_slide_1 from "../assets/img_slide_1.webp"
 import CCStep2API from '../API/CCStep2API';
 import S3FormBodyWrap from './S3FormBodyWrap';
+import { setCCStep3GetAPI, setContextCardDetails } from '../store/CCStep3GetSlice';
 
 
 const CCContentBodyStep3 = ({ params }) => {
@@ -41,39 +42,52 @@ const CCContentBodyStep3 = ({ params }) => {
 
   // useDispatch
   const dispatch = useDispatch()
+
   // useState
-
-
-  const [tabState, setTabState] = useState({
-    tab: ""
-  })
 
   const [cardState, setCardState] = useState("")
 
-  const [sliderUpload, setSliderUpload] = useState({
-    cardId: "",
-    img: null
-  })
+  const [loader, setLoader] = useState(true)
 
   // useEffect
   useEffect(() => {
     if (CCStepsTFData && CCStepsTFData.Step1 === false) {
       navigate(`/campaignCreateFlow/${'step2'}/${CCStep2Data.id}`);
+
     }
   }, [CCStepsTFData?.Step1])
 
 
   useEffect(() => {
     dispatch(CCStep3GetAPI(params.id))
+
   }, [])
 
   useEffect(() => {
-    // dispatch(CCStep3DeleteAPI())
+    if (CCStep2Data === null) {
+      setLoader(true)
+    } else {
+      setLoader(false)
+    }
+  }, [CCStep2Data])
+
+  useEffect(() => {
+    if (CCStep3CardsData === null) {
+      setLoader(true)
+    } else {
+      setLoader(false)
+    }
+
   }, [CCStep3CardsData])
+
+
+  useEffect(() => {
+    dispatch(setContextCardDetails({...cardState}))
+  }, [cardState])
+
+
   // useNavigate
   const navigate = useNavigate()
-
-
 
   // const 
 
@@ -94,15 +108,10 @@ const CCContentBodyStep3 = ({ params }) => {
       title: title,
       type: type
     }]))
-    // setSelectedTopic(CCStep3CardsData?.length)
-    // setTabState((prevState) => ({
-    //   ...prevState,
-    //   tab: type
-    // }))
+
   };
 
-
-  console.log(tabState);
+  console.log(cardState);
   console.log(CCStep3CardsData);
 
 
@@ -110,7 +119,7 @@ const CCContentBodyStep3 = ({ params }) => {
 
   const handleDeleteFunction = (deletePayload, id) => {
     console.log(deletePayload, id);
-    dispatch(CCStep3DeleteAPI(deletePayload, id, cardState, { setCardState }))
+    dispatch(CCStep3DeleteAPI(deletePayload, id, cardState, { setCardState }, { setLoader }))
   }
 
   // handle upload
@@ -118,26 +127,31 @@ const CCContentBodyStep3 = ({ params }) => {
 
   const handel_slider_upload = (event, id) => {
     const { files } = event.target
-    // setSliderUpload((prevState) => ({
-    //   ...prevState,
-    //   cardId: cardState?.id,
-    //   img: files[0]
-    // }))
     const formData = new FormData();
-      formData.append("cardId", id);
-      formData.append("img", files[0]);
-      setTimeout(() => {
-    dispatch(CCStep3UploadAPI(formData)) 
-      }, 2000);
+    formData.append("cardId", id);
+    formData.append("img", files[0]);
+    setTimeout(() => {
+      dispatch(CCStep3UploadAPI(formData, id, cardState, { setCardState }, { setLoader }))
+    }, 2000);
+
   }
 
-  console.log("card-id", cardState?.id);
+  const handleUploadFunction = (e) => {
+    const { name, value } = e.target
+    setCardState((prevState) => ({
+      ...prevState,
+      [name]: value
+    }))
+  }
+
+
 
   return (
     <div>
       <div className='d-flex flex-column rounded'>
         <div className="CC_Step3_body d-flex flex-fill bg_white rounded">
-          <Row className=" d-flex flex-fill p-3 bg_white rounded">
+          <Row className="spinner_relative d-flex flex-fill p-3 bg_white rounded">
+
             <Col sm={4} lg={2} className="d-flex  border border-dark flex-column light_violet">
               <div className="CCStep3_sidebar d-flex felx-fill flex-column px-2">
                 <span className='mt-2'>Topics</span>
@@ -162,7 +176,7 @@ const CCContentBodyStep3 = ({ params }) => {
               <div className="CCStep3_main light_violet d-flex flex-column border border-dark flex-fill p-3">
                 <span className='text_85'>Build Campaign</span>
                 {/* <S3FormBodyWrap /> */}
-                <div className="step3_form_wrap bg_white rounded d-flex flex-column mt-2">
+                <div className="step3_form_wrap bg_white rounded d-flex flex-column mt-2 spinner_relative">
                   {/* {CCStep3CardsData?.map((e, index) => {
                     // console.log(e[index]);
                     console.log(CCStep3CardsData);
@@ -345,6 +359,9 @@ const CCContentBodyStep3 = ({ params }) => {
                       </>
                     )
                   })} */}
+                  <Spinner className={`spinner_absolute ${loader ? "d-flex" : "d-none"}`}>
+                    Loading...
+                  </Spinner>
 
 
                   {cardState.type === "textbox" && (
@@ -364,6 +381,8 @@ const CCContentBodyStep3 = ({ params }) => {
                             type="text"
                             className='text_85 inputFocus border border-secondary-subtle  mb-2'
                             value={cardState?.title}
+                            onChange={handleUploadFunction}
+                            name="title"
                           />
                         </div>
                         <div className="about_decription">
@@ -373,6 +392,8 @@ const CCContentBodyStep3 = ({ params }) => {
                             row={3}
                             className='text_85 inputFocus border border-secondary-subtle mb-2'
                             value={cardState?.description}
+                            onChange={handleUploadFunction}
+                            name="description"
                           />
                         </div>
                         <div className="about_tag">
@@ -381,6 +402,8 @@ const CCContentBodyStep3 = ({ params }) => {
                             type='text'
                             className='text_85 inputFocus border border-secondary-subtle mb-2'
                             value={cardState?.tag}
+                            onChange={handleUploadFunction}
+                            name="tag"
                           />
                         </div>
                         <div className="about_reference">
@@ -388,6 +411,8 @@ const CCContentBodyStep3 = ({ params }) => {
                           <Input
                             className='text_85 inputFocus border border-secondary-subtle mb-2'
                             value={cardState?.reference}
+                            onChange={handleUploadFunction}
+                            name="reference"
                           />
                         </div>
                       </div>
@@ -438,11 +463,21 @@ const CCContentBodyStep3 = ({ params }) => {
                         </div>
                         <div className="mediabox_image_video">
                           <p className='text_75'>Select Image or Video  <span className='text-danger'>*</span></p>
-                          <Input
-                            type='text'
-                            className='text_85 inputFocus border border-secondary-subtle mb-2'
-                            value={cardState?.media[0]?.path}
-                          />
+                          {cardState?.media[0]?.path ?
+                            <InputGroup>
+                              <Input placeholder="" className='inputFocus' value={cardState?.media[0]?.path} />
+                              <InputGroupText className='p-0'>
+                                <Button className='px-3 py-1 bg_white text-dark' onClick={() => handleDeleteFunction(cardState?.media[0], cardState?.id)}>
+                                  <IoCloseOutline />
+                                </Button >
+                              </InputGroupText>
+                            </InputGroup>
+                            : <Input
+                              type='file'
+                              className='text_85 inputFocus border border-secondary-subtle mb-2'
+                              onChange={(e) => { handel_slider_upload(e, cardState?.id) }}
+                            />}
+
                         </div>
 
                       </div>

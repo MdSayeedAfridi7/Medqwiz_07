@@ -769,7 +769,25 @@ code {
 .active_table_column .spinner-border {
   --bs-spinner-border-width: 0.12em !important;
   border-color: rebeccapurple !important;
-  border-right-color: transparent !important; 
+  border-right-color: transparent !important;
+}
+
+
+.spinner_relative {
+  position: relative
+}
+
+
+.spinner_absolute {
+  position: absolute !important;
+  top: 50%;
+  right: 45%;
+}
+
+.spinner-border {
+  --bs-spinner-border-width: 0.12em !important;
+  border-color: rebeccapurple !important;
+  border-right-color: transparent !important;
 }
 
 /* Media queries */
