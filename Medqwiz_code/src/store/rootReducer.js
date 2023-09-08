@@ -10,6 +10,8 @@ import CCStep3PostSlice from "./CCStep3PostSlice"
 import CCStep3GetSlice from "./CCStep3GetSlice" 
 import CCStepT_F_Slice from "./CCStepT_F_Slice"
 import CCStep3AddSlice from "./CCStep3AddSlice"
+import Types_slice from "./GameDetailSlice.js/Types_slice"
+import Create_game_post_slice from "./GameDetailSlice.js/Create_game_post_slice"
 
 
 
@@ -25,7 +27,9 @@ const rootReducer = combineReducers({
     CCStep3PostSlice,
     CCStep3GetSlice,
     CCStepT_F_Slice,
-    CCStep3AddSlice
+    CCStep3AddSlice,
+    Types_slice,
+    Create_game_post_slice
 
 })
 

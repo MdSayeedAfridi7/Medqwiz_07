@@ -121,7 +121,7 @@ const Sidebar = () => {
 
                                 </div>
                                 <div className="logout_button d-flex flex-fill justify-content-center align-items-end">
-                                    <Button className='d-flex w-75 justify-content-center' onClick={handleLogout}>
+                                    <Button className='d-flex w-75 justify-content-center mb-2' onClick={handleLogout}>
                                         logout
                                     </Button >
                                 </div>

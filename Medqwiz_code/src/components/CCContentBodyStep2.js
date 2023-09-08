@@ -20,7 +20,7 @@ const selectRunTime = [
     { value: 4, label: "30 Days" },
 ];
 
-const CCContentBodyStep2 = ({params}) => {
+const CCContentBodyStep2 = () => {
 
     const CCStep2Data = useSelector((state) => state?.reducer?.CCStep2Slice);
     console.log(CCStep2Data);
@@ -581,10 +581,10 @@ const CCContentBodyStep2 = ({params}) => {
                 </div>
             </div>
             <div className="cc_step2_content_footer border-top border-secondary pt-3 pb-3 d-flex justify-content-between">
-                <Button className="ms-5" onClick={handleCCStep2Back}>
-                    <BiArrowBack /> Go Back
+                <Button className="ms-5 text_85" onClick={handleCCStep2Back}>
+                    <BiArrowBack className='text_85'/> Go Back
                 </Button>
-                <Button className="me-5" onClick={handleStep2}>
+                <Button className="me-5 text_85" onClick={handleStep2}>
                     Save and Continue <IoArrowForward />
                 </Button>
             </div>

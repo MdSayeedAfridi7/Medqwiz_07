@@ -312,6 +312,9 @@ code {
   background-color: #f6f6f6;
 }
 
+.cursor_not_allowed {
+  cursor: not-allowed !important;
+}
 
 /* Row */
 
@@ -711,6 +714,13 @@ code {
   min-height: 7rem;
 }
 
+.card_Slider_images{
+  /* min-height: 7rem !important ; */
+  /* max-height: 7rem !important ; */
+  /* min-width: 10rem !important ; */
+  /* max-width: 12rem !important ; */
+}
+
 .step3_card_slides_div img {}
 
 /* side_card_notes */
@@ -789,6 +799,23 @@ code {
   border-color: rebeccapurple !important;
   border-right-color: transparent !important;
 }
+
+
+/*select_card_component*/
+.select_card_component {
+  min-height: 26rem !important;
+}
+
+
+/* game details */
+.four_games_outline div:nth-child(4) p {
+  background-color: #f8f8f8;
+}
+
+.game_details_footer button {
+  background-color: #77529f !important;
+}
+
 
 /* Media queries */
 
