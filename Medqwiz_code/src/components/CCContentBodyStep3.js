@@ -5,7 +5,7 @@ import { BiArrowBack } from 'react-icons/bi';
 import { IoArrowForward, IoCloseOutline } from 'react-icons/io5';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { CCStep3AddAPI, CCStep3DeleteAPI, CCStep3GetAPI, CCStep3UploadAPI, CCStepsTrueFalseAPI } from '../API/IndexAPIs';
+import { CCStep3AddAPI, CCStep3DeleteAPI, CCStep3DeleteCardAPI, CCStep3GetAPI, CCStep3UploadAPI, CCStepsTrueFalseAPI } from '../API/IndexAPIs';
 import { useEffect } from 'react';
 import { RiDeleteBinLine } from "react-icons/ri"
 import quote_card from "../assets/quote_card.svg"
@@ -53,14 +53,12 @@ const CCContentBodyStep3 = ({ params }) => {
   useEffect(() => {
     if (CCStepsTFData && CCStepsTFData.Step1 === false) {
       navigate(`/campaignCreateFlow/${'step2'}/${CCStep2Data.id}`);
-
     }
   }, [CCStepsTFData?.Step1])
 
 
   useEffect(() => {
     dispatch(CCStep3GetAPI(params.id))
-
   }, [])
 
   useEffect(() => {
@@ -82,7 +80,7 @@ const CCContentBodyStep3 = ({ params }) => {
 
 
   useEffect(() => {
-    dispatch(setContextCardDetails({...cardState}))
+    dispatch(setContextCardDetails({ ...cardState }))
   }, [cardState])
 
 
@@ -108,22 +106,31 @@ const CCContentBodyStep3 = ({ params }) => {
       title: title,
       type: type
     }]))
-
+    
   };
 
   console.log(cardState);
   console.log(CCStep3CardsData);
+  console.log(CCStep3CardsData.map((e) => {
+    return (e?.media)
+  }));
 
 
   // delete function
 
   const handleDeleteFunction = (deletePayload, id) => {
-    console.log(deletePayload, id);
+    console.log("handleDeletePayload", deletePayload, id);
     dispatch(CCStep3DeleteAPI(deletePayload, id, cardState, { setCardState }, { setLoader }))
   }
 
-  // handle upload
+  // delete card function
 
+  const handleDeleteCardFunction = (deleteCardPayload, cardId) => {
+    console.log("delete_card_payload", deleteCardPayload, cardId);
+    dispatch(CCStep3DeleteCardAPI(deleteCardPayload, cardId, { setLoader }))
+  }
+
+  // handle upload
 
   const handel_slider_upload = (event, id) => {
     const { files } = event.target
@@ -136,13 +143,16 @@ const CCContentBodyStep3 = ({ params }) => {
 
   }
 
-  const handleUploadFunction = (e) => {
-    const { name, value } = e.target
-    setCardState((prevState) => ({
-      ...prevState,
-      [name]: value
-    }))
-  }
+  // A type of onChange input function.
+
+  // const handleUploadFunction = (e) => {
+  //   const { name, value } = e.target
+  //   setCardState((prevState) => ({
+  //     ...prevState,
+  //     [name]: value
+  //   }))
+  // }
+
 
 
 
@@ -152,15 +162,17 @@ const CCContentBodyStep3 = ({ params }) => {
         <div className="CC_Step3_body d-flex flex-fill bg_white rounded">
           <Row className="spinner_relative d-flex flex-fill p-3 bg_white rounded">
 
-            <Col sm={4} lg={2} className="d-flex  border border-dark flex-column light_violet">
+            <Col sm={4} md={4} lg={2} className="d-flex  border border-dark flex-column light_violet">
               <div className="CCStep3_sidebar d-flex felx-fill flex-column px-2">
                 <span className='mt-2'>Topics</span>
                 <div className="topics_tab mt-2" >
                   {CCStep3CardsData && (CCStep3CardsData.map((e, index) => {
-                    // console.log(index);
+                    console.log(e?.id);
+                    console.log(cardState?.id);
                     return (
                       <>
-                        <div className={`topic_tabs_divs bg_white p-2 fw-bold d-flex justify-content-start align-items-center rounded my-2 border_grey cursor_pointer ${e?.id === cardState?.id ? "activeS3_tab" : ""}`} key={index}
+                        <div className={`topic_tabs_divs bg_white p-2 fw-bold d-flex justify-content-start align-items-center rounded my-2 border_grey cursor_pointer 
+                        ${e?.id === cardState?.id ? "activeS3_tab" : ""}`} key={index}
                           onClick={() => { setCardState(e) }}>
                           <span>{e?.title}</span>
                         </div>
@@ -172,193 +184,11 @@ const CCContentBodyStep3 = ({ params }) => {
               </div>
             </Col>
 
-            <Col sm={8} lg={6} className="d-flex flex-fill  border border-dark ps-sm-3">
+            <Col sm={8} md={8} lg={6} className="d-flex flex-fill  border border-dark ps-sm-3">
               <div className="CCStep3_main light_violet d-flex flex-column border border-dark flex-fill p-3">
                 <span className='text_85'>Build Campaign</span>
                 {/* <S3FormBodyWrap /> */}
                 <div className="step3_form_wrap bg_white rounded d-flex flex-column mt-2 spinner_relative">
-                  {/* {CCStep3CardsData?.map((e, index) => {
-                    // console.log(e[index]);
-                    console.log(CCStep3CardsData);
-                    console.log(e?.type);
-                    return (
-                      <>
-                        {tabState.tab === e?.type && (
-                          <>
-                            <div className="build_campaign_header d-flex justify-content-between p-3 bg_white rounded-top pb-2">
-                              <div className="about_header_name">
-                                <span className='text_100'>{e?.type} Card</span>
-                              </div>
-                              <div className="about_header_delete_btn text_125">
-                                <RiDeleteBinLine />
-                              </div>
-                            </div>
-                            <div className="about_form_field d-flex flex-column p-3 bg_white rounded-bottom">
-                              <div className="about_card_title d-flex flex-column">
-                                <p className='text_75'>Enter the card Title <span className='text-danger'>*</span></p>
-                                <Input
-                                  type="text"
-                                  className='text_100 inputFocus border border-secondary-subtle  mb-2'
-                                />
-                              </div>
-                              <div className="about_decription">
-                                <p className='text_75'>Description <span className='text-danger'>*</span></p>
-                                <Input
-                                  type='textarea'
-                                  row={3}
-                                  className='text_100 inputFocus border border-secondary-subtle mb-2'
-                                />
-                              </div>
-                              <div className="about_tag">
-                                <p className='text_75'>Tag <span className='text-danger'>*</span></p>
-                                <Input
-                                  type='text'
-                                  className='text_100 inputFocus border border-secondary-subtle mb-2'
-                                />
-                              </div>
-                              <div className="about_reference">
-                                <p className='text_75'>Reference <span className='text-danger'>*</span></p>
-                                <Input
-                                  className='text_100 inputFocus border border-secondary-subtle mb-2'
-                                />
-                              </div>
-                            </div>
-                          </>
-                        )}
-                        {tabState.tab === e?.type && (
-                          <>
-                            <div className="build_campaign_header d-flex justify-content-between p-3 bg_white rounded-top pb-2">
-                              <div className="about_header_name">
-                                <span className='text_100'>{e?.type} Card</span>
-                              </div>
-                              <div className="about_header_delete_btn text_125">
-                                <RiDeleteBinLine />
-                              </div>
-                            </div>
-                            <div className="about_form_field d-flex flex-column p-3 bg_white rounded-bottom">
-                              <div className="about_card_title d-flex flex-column">
-                                <p className='text_75'>Enter the card Title <span className='text-danger'>*</span></p>
-                                <Input
-                                  type="text"
-                                  className='text_100 inputFocus border border-secondary-subtle  mb-2'
-                                />
-                              </div>
-                              <div className="about_decription">
-                                <p className='text_75'>Description <span className='text-danger'>*</span></p>
-                                <Input
-                                  type='textarea'
-                                  row={3}
-                                  className='text_100 inputFocus border border-secondary-subtle mb-2'
-                                />
-                              </div>
-                              <div className="about_tag">
-                                <p className='text_75'>Tag <span className='text-danger'>*</span></p>
-                                <Input
-                                  type='text'
-                                  className='text_100 inputFocus border border-secondary-subtle mb-2'
-                                />
-                              </div>
-                              <div className="about_reference">
-                                <p className='text_75'>Reference <span className='text-danger'>*</span></p>
-                                <Input
-                                  className='text_100 inputFocus border border-secondary-subtle mb-2'
-                                />
-                              </div>
-                              <div className="mediabox_image_video">
-                                <p className='text_75'>Select Image or Video  <span className='text-danger'>*</span></p>
-                                <Input
-                                  className='text_100 inputFocus border border-secondary-subtle mb-2'
-                                />
-                              </div>
-
-                            </div>
-                          </>
-                        )}
-                        {tabState.tab === e?.type && (
-                          <>
-
-                            <div className="build_campaign_header d-flex justify-content-between p-3 bg_white rounded-top pb-2">
-                              <div className="about_header_name">
-                                <span className='text_100'>{e?.type} Card</span>
-                              </div>
-                              <div className="about_header_delete_btn text_125">
-                                <RiDeleteBinLine />
-                              </div>
-                            </div>
-                            <div className="slider_form bg_white d-flex flex-column p-3">
-                              <div className="slider_form_file_selection d-flex flex-column">
-                                <p className='text_75'>Select First Image <span className='text-danger'>*</span></p>
-                                <Input
-                                  type="file"
-                                  className='text_100 inputFocus border border-secondary-subtle  mb-2 text_85'
-                                />
-                                <InputGroup>
-                                  <Input placeholder="" className='inputFocus' />
-                                  <InputGroupText className='p-0'>
-                                    <Button className='px-3 py-1 bg_white text-dark' >
-                                      <IoCloseOutline />
-                                    </Button>
-                                  </InputGroupText>
-                                </InputGroup>
-                              </div>
-                              <div className="slider_form_file_selection d-flex flex-column">
-                                <p className='text_75'>Select Second Image <span className='text-danger'>*</span></p>
-                                <Input
-                                  type="file"
-                                  className='text_100 inputFocus border border-secondary-subtle  mb-2 text_85'
-                                />
-                                <InputGroup>
-                                  <Input placeholder="" className='inputFocus' />
-                                  <InputGroupText className='p-0'>
-                                    <Button className='px-3 py-1 bg_white text-dark' >
-                                      <IoCloseOutline />
-                                    </Button>
-                                  </InputGroupText>
-                                </InputGroup>
-                              </div>
-                              <div className="slider_form_file_selection d-flex flex-column">
-                                <p className='text_75'>Select third Image <span className='text-danger'>*</span></p>
-                                <Input
-                                  type="file"
-                                  className='text_100 inputFocus border border-secondary-subtle  mb-2 text_85'
-                                />
-                                <InputGroup>
-                                  <Input placeholder="" className='inputFocus' />
-                                  <InputGroupText className='p-0'>
-                                    <Button className='px-3 py-1 bg_white text-dark' >
-                                      <IoCloseOutline />
-                                    </Button>
-                                  </InputGroupText>
-                                </InputGroup>
-                              </div>
-                            </div>
-                          </>
-                        )}
-                        {tabState.tab === e?.type && (
-                          <>
-                            <div className="build_campaign_header d-flex justify-content-between p-3 bg_white rounded-top pb-2">
-                              <div className="about_header_name">
-                                <span className='text_100'>{e?.type} Card</span>
-                              </div>
-                              <div className="about_header_delete_btn text_125">
-                                <RiDeleteBinLine />
-                              </div>
-                            </div>
-                            <div className="quote_form bg_white p-3">
-                              <div className="quote_card">
-                                <p className='text_75'>Enter the Quote <span className='text-danger'>*</span></p>
-                                <Input
-                                  type='textarea'
-                                  rows="5"
-                                  className='text_100 inputFocus border border-secondary-subtle mb-2'
-                                />
-                              </div>
-                            </div>
-                          </>
-                        )}
-                      </>
-                    )
-                  })} */}
                   <Spinner className={`spinner_absolute ${loader ? "d-flex" : "d-none"}`}>
                     Loading...
                   </Spinner>
@@ -371,7 +201,7 @@ const CCContentBodyStep3 = ({ params }) => {
                           <span className='text_100'>{cardState?.type} Card</span>
                         </div>
                         <div className="about_header_delete_btn text_125">
-                          <RiDeleteBinLine />
+                          <RiDeleteBinLine className="cursor_pointer" onClick={() => handleDeleteCardFunction([cardState], cardState?.id)} />
                         </div>
                       </div>
                       <div className="about_form_field d-flex flex-column p-3 bg_white rounded-bottom">
@@ -381,7 +211,7 @@ const CCContentBodyStep3 = ({ params }) => {
                             type="text"
                             className='text_85 inputFocus border border-secondary-subtle  mb-2'
                             value={cardState?.title}
-                            onChange={handleUploadFunction}
+                            onChange={(e) => setCardState({ ...cardState, title: e?.target?.value })}
                             name="title"
                           />
                         </div>
@@ -392,7 +222,7 @@ const CCContentBodyStep3 = ({ params }) => {
                             row={3}
                             className='text_85 inputFocus border border-secondary-subtle mb-2'
                             value={cardState?.description}
-                            onChange={handleUploadFunction}
+                            onChange={(e) => setCardState({ ...cardState, description: e?.target?.value })}
                             name="description"
                           />
                         </div>
@@ -402,7 +232,7 @@ const CCContentBodyStep3 = ({ params }) => {
                             type='text'
                             className='text_85 inputFocus border border-secondary-subtle mb-2'
                             value={cardState?.tag}
-                            onChange={handleUploadFunction}
+                            onChange={(e) => setCardState({ ...cardState, tag: e?.target?.value })}
                             name="tag"
                           />
                         </div>
@@ -411,7 +241,7 @@ const CCContentBodyStep3 = ({ params }) => {
                           <Input
                             className='text_85 inputFocus border border-secondary-subtle mb-2'
                             value={cardState?.reference}
-                            onChange={handleUploadFunction}
+                            onChange={(e) => setCardState({ ...cardState, reference: e?.target?.value })}
                             name="reference"
                           />
                         </div>
@@ -425,7 +255,7 @@ const CCContentBodyStep3 = ({ params }) => {
                           <span className='text_100'>{cardState?.type} Card</span>
                         </div>
                         <div className="about_header_delete_btn text_125">
-                          <RiDeleteBinLine />
+                          <RiDeleteBinLine className="cursor_pointer" onClick={() => handleDeleteCardFunction([cardState], cardState?.id)} />
                         </div>
                       </div>
                       <div className="about_form_field d-flex flex-column p-3 bg_white rounded-bottom">
@@ -435,6 +265,7 @@ const CCContentBodyStep3 = ({ params }) => {
                             type="text"
                             className='text_85 inputFocus border border-secondary-subtle  mb-2'
                             value={cardState?.title}
+                            onChange={(e) => setCardState({ ...cardState, title: e?.target?.value })}
                           />
                         </div>
                         <div className="about_decription">
@@ -444,6 +275,7 @@ const CCContentBodyStep3 = ({ params }) => {
                             row={3}
                             className='text_85 inputFocus border border-secondary-subtle mb-2'
                             value={cardState?.description}
+                            onChange={(e) => setCardState({ ...cardState, description: e?.target?.value })}
                           />
                         </div>
                         <div className="about_tag">
@@ -452,6 +284,7 @@ const CCContentBodyStep3 = ({ params }) => {
                             type='text'
                             className='text_85 inputFocus border border-secondary-subtle mb-2'
                             value={cardState?.tag}
+                            onChange={(e) => setCardState({ ...cardState, tag: e?.target?.value })}
                           />
                         </div>
                         <div className="about_reference">
@@ -459,6 +292,7 @@ const CCContentBodyStep3 = ({ params }) => {
                           <Input
                             className='text_85 inputFocus border border-secondary-subtle mb-2'
                             value={cardState?.reference}
+                            onChange={(e) => setCardState({ ...cardState, reference: e?.target?.value })}
                           />
                         </div>
                         <div className="mediabox_image_video">
@@ -474,7 +308,7 @@ const CCContentBodyStep3 = ({ params }) => {
                             </InputGroup>
                             : <Input
                               type='file'
-                              className='text_85 inputFocus border border-secondary-subtle mb-2'
+                              className='text_85 inputFocus border border-secondary-subtle mb-2' Card
                               onChange={(e) => { handel_slider_upload(e, cardState?.id) }}
                             />}
 
@@ -490,7 +324,7 @@ const CCContentBodyStep3 = ({ params }) => {
                           <span className='text_100'>{cardState?.type} Card</span>
                         </div>
                         <div className="about_header_delete_btn text_125">
-                          <RiDeleteBinLine />
+                          <RiDeleteBinLine className="cursor_pointer" onClick={() => handleDeleteCardFunction([cardState], cardState?.id)} />
                         </div>
                       </div>
                       <div className="slider_form bg_white d-flex flex-column p-3">
@@ -567,7 +401,7 @@ const CCContentBodyStep3 = ({ params }) => {
                           <span className='text_100'>{cardState?.type} Card</span>
                         </div>
                         <div className="about_header_delete_btn text_125">
-                          <RiDeleteBinLine />
+                          <RiDeleteBinLine className="cursor_pointer" onClick={() => handleDeleteCardFunction([cardState], cardState?.id)} />
                         </div>
                       </div>
                       <div className="quote_form bg_white p-3">
@@ -578,6 +412,7 @@ const CCContentBodyStep3 = ({ params }) => {
                             rows="5"
                             className='text_85 inputFocus border border-secondary-subtle mb-2'
                             value={cardState?.description}
+                            onChange={(e) => setCardState({ ...cardState, description: e?.target?.value })}
                           />
                         </div>
                       </div>
@@ -624,60 +459,65 @@ const CCContentBodyStep3 = ({ params }) => {
                 <PerfectScrollbar className='step3_side_scroll_y'>
                   <div className="step3_side_card_wrap">
                     <div className="step3_card_image rounded-bottom">
-                      <img src={step3_card_image} alt="" className='img-fluid rounded-bottom' />
+                      <img src={CCStep2Data?.campImage?.url} alt="" className='img-fluid rounded-bottom' />
                     </div>
-                    <div className="step3_card_logo_div d-flex mt-3 ">
-                      <span className='violet_text_color fw-bold'>Refresh Tears Eye Drop</span>
+                    <div className="step3_card_logo_div d-flex mt-3 justify-content-between align-items-center">
+                      <span className='violet_text_color fw-bold'>{CCStep2Data?.campName}</span>
                       <div className="logo_img_div_S3 d-flex justify-content-center align-items-center rounded border border-secondary-subtle">
-                        <img src={step3_card_logo} alt="" className='img-fluid' />
+                        <img src={CCStep2Data?.PharmaLogo?.url} alt="" className='img-fluid' />
                       </div>
                     </div>
                     <div className="step3_card_title my-2">
-                      <span className='fw-bold text_85'>Eye Drops</span>
+                      <span className='fw-bold text_85'>{CCStep2Data?.campTag}</span>
                     </div>
-                    <div className="about_side_card my-3 rounded border border-black">
-                      <div className="about_side_header d-flex p-2 justify-content-between border-bottom border-dark">
-                        <span className='text_125 violet_text_color fw-bold'>ABOUT</span>
-                        <span className='text_75 badge step3_card_badge'>Allergen</span>
-                      </div>
-                      <div className="about_side_body d-flex violet_text_color text_85 p-2">
-                        Refresh Tears Eye Drop is an eye lubricant or artificial tears used to relieve dry eyes. This can happen because not enough tears are made to keep the eye lubricated. It helps to soothe the irritation and burning seen in dry eyes by maintaince.
-                      </div>
-                      <div className="about_side_footer dark_violet_bg d-flex justify-content-center align-items-center">
-                        <span className='text_85 text-white pt-1 pb-1'>1mg</span>
-                      </div>
-                    </div>
-                    <div className="benefits_side_card rounded border border-black">
-                      <div className="about_side_header d-flex p-2 justify-content-between border-bottom border-dark">
-                        <span className='text_125 violet_text_color fw-bold'>BENEFITS</span>
-                        <span className='text_75 badge step3_card_badge'>Allergen</span>
-                      </div>
-                      <div className="benfits_side_image p-1 rounded">
-                        <img src={benefits_img} alt="" className='img-fluid rounded border border-secondary-subtle' />
-                      </div>
-                      <div className="benefits_side_body d-flex violet_text_color text_85 p-2">
-                        Normally your eyes produce enough natural tears to help them move easily and comfortably and to remove dust and other particles. If they do not produce enough tears, they can become dry, red, and painful. Dry eyes can be caused by wind, sun, heating, computer
-                      </div>
-                      <div className="benefits_side_footer dark_violet_bg d-flex justify-content-center align-items-center">
-                        <span className='text_85 text-white pt-1 pb-1'>1mg</span>
-                      </div>
-                    </div>
-
-                    <div className="side_card_image_slide_h">
-                      <PerfectScrollbar>
-                        <div className="step3_card_slides_div d-flex my-3">
-                          <img src={img_slide_1} alt="" className='img-fluid border border-black rounded me-2' />
-                          <img src={img_slide_1} alt="" className='img-fluid border border-black rounded me-2' />
-                          <img src={img_slide_1} alt="" className='img-fluid border border-black rounded me-2' />
+                    {CCStep3CardsData.map((e) => {
+                      return (
+                        <div className='mt-2'>
+                          {e?.type === "textbox" && (<div className="about_side_card my-3 rounded border border-black">
+                            <div className="about_side_header d-flex p-2 justify-content-between border-bottom border-dark">
+                              <span className='text_125 violet_text_color fw-bold'>{e?.title}</span>
+                              <span className='text_75 badge step3_card_badge'>{e?.tag}</span>
+                            </div>
+                            <div className="about_side_body d-flex violet_text_color text_85 p-2">
+                              {e?.description}
+                            </div>
+                            <div className="about_side_footer dark_violet_bg d-flex justify-content-center align-items-center">
+                              <span className='text_85 text-white pt-1 pb-1'>{e?.reference}</span>
+                            </div>
+                          </div>)}
+                          {e?.type === "mediabox" && (<div className="benefits_side_card rounded border border-black">
+                            <div className="about_side_header d-flex p-2 justify-content-between border-bottom border-dark">
+                              <span className='text_125 violet_text_color fw-bold'>{e?.title}</span>
+                              <span className='text_75 badge step3_card_badge'>{e?.tag}</span>
+                            </div>
+                            <div className="benfits_side_image rounded">
+                              <img src={e?.media[0]?.links?.url} alt="" className='img-fluid rounded' />
+                            </div>
+                            <div className="benefits_side_body d-flex violet_text_color text_85 p-1">
+                              {e?.description}
+                            </div>
+                            <div className="benefits_side_footer dark_violet_bg d-flex justify-content-center align-items-center">
+                              <span className='text_85 text-white pt-1 pb-1'>{e?.reference}</span>
+                            </div>
+                          </div>)}
+                          {e?.type === "slider" && (<div className="side_card_image_slide_h">
+                            <PerfectScrollbar>
+                              <div className="step3_card_slides_div d-flex my-3 border border-secondary-subtle rounded">
+                                {e?.media?.map((i) => {
+                                  console.log("image", i);
+                                  return (
+                                    <img src={i?.links?.url} alt="" className='img-fluid border border-black rounded me-2' />
+                                  )
+                                })}
+                              </div>
+                            </PerfectScrollbar>
+                          </div>)}
+                          {e?.type === "quote" && (<div className="side_card_notes border border-danger p-2 rounded ">
+                            <p className='text-danger text_85'>{`"${e?.description === ""? "Enter the quote": e?.description}"`}</p>
+                          </div>)}
                         </div>
-                      </PerfectScrollbar>
-                    </div>
-
-                    <div className="side_card_notes border border-danger p-2 rounded ">
-                      <p className='text-danger'>"
-                        If you miss a dose of Refresh Tears Eye Drop, skip it and continue with your normal schedule. Do not double the dose"
-                      </p>
-                    </div>
+                      )
+                    })}
                   </div>
 
                 </PerfectScrollbar>

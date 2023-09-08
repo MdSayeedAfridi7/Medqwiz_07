@@ -679,14 +679,14 @@ code {
   max-height: inherit !important;
 }
 
-.benfits_side_image {
+/* .benfits_side_image {
   max-height: 10rem;
   min-height: 10rem;
-}
+} */
 
 .benfits_side_image img {
   width: 100%;
-  max-height: inherit !important;
+  max-height: 10rem !important;
 }
 
 

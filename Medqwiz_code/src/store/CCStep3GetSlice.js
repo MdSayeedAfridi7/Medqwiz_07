@@ -11,7 +11,9 @@ const CCStep3GetSlice = createSlice({
             return state?.concat(action?.payload?.data)
         },
 
-        deleteCCStep3CardDetails: (state, action) => {
+        deleteCCStep3CardImage: (state, action) => {
+
+            console.log("delete", action?.payload);
 
             return state?.map((item) => {
                 if (item?.id === action?.payload?.id) {
@@ -22,6 +24,10 @@ const CCStep3GetSlice = createSlice({
                     )
                 }
             })
+        },
+
+        deleteCCStep3Card: (state, action) => {
+            return state?.filter((e) => e?.id !== action?.payload?.deleteCardPayload[0]?.id)
         },
 
         uploadCCStep3CardDetails: (state, action) => {
@@ -38,8 +44,16 @@ const CCStep3GetSlice = createSlice({
         },
 
         setContextCardDetails: (state, action) => {
-            console.log("context", action?.payload);
-            // return ()
+
+            return state?.map((item) => {
+                if (item?.id === action?.payload?.id && item.type === action?.payload?.type) {
+                    return action?.payload
+                } else {
+                    return (
+                        item
+                    )
+                }
+            })
         },
 
         setCCStep3GetAPIReset: (state, action) => {
@@ -48,7 +62,7 @@ const CCStep3GetSlice = createSlice({
     }
 })
 
-export const { setCCStep3GetAPI, AddCCStep3CardDetails, setCCStep3GetAPIReset, deleteCCStep3CardDetails, uploadCCStep3CardDetails, setContextCardDetails } = CCStep3GetSlice.actions
+export const { setCCStep3GetAPI, AddCCStep3CardDetails, setCCStep3GetAPIReset, deleteCCStep3CardImage, deleteCCStep3Card, uploadCCStep3CardDetails, setContextCardDetails } = CCStep3GetSlice.actions
 export default CCStep3GetSlice.reducer
 
 

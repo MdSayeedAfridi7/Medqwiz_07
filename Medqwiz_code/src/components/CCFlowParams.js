@@ -1,7 +1,7 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
 import CCFStep2 from './CCFStep2';
-import { useDispatch } from 'react-redux';
+import { useDispatch, useSelector } from 'react-redux';
 import CCStep2API from '../API/CCStep2API';
 import { useEffect } from 'react';
 import { CCStep3GetAPI } from '../API/IndexAPIs';
@@ -14,12 +14,11 @@ import CCContentStepsFlow from './CCContentStepsFlow';
 const CCStep2 = () => {
     const params = useParams()
     const dispatch = useDispatch()
-
+    const campaignDetailsData = useSelector((state) => state?.reducer?.CCStep3PostSlice)
 
     useEffect(() => {
-        dispatch(CCStep2API(params.id))
-        // dispatch(CCStep3GetAPI(params.id))
-    }, [])
+        dispatch(CCStep2API(params?.id))
+    }, [params, campaignDetailsData])
 
     console.log(params)
  
@@ -33,7 +32,7 @@ const CCStep2 = () => {
                     <CCContentStepsFlow />
                 </Col>
                 <Col className="ccf_main_content d-flex border border-dark flex-column">
-                    {params.step === "step2" && <CCContentBodyStep2 />}
+                    {params.step === "step2" && <CCContentBodyStep2 params={params}/>}
                     {params.step === "step3" && <CCContentBodyStep3 params={params}/>}
                 </Col>
             </Row>
