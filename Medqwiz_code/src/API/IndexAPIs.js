@@ -1,6 +1,6 @@
 import axios from "axios";
 import { setCCStep3PostAPI } from "../store/CCStep3PostSlice";
-import { AddCCStep3CardDetails, deleteCCStep3CardDetails, setCCStep3GetAPI, uploadCCStep3CardDetails } from "../store/CCStep3GetSlice";
+import { AddCCStep3CardDetails, deleteCCStep3Card, deleteCCStep3CardDetails, deleteCCStep3CardImage, setCCStep3GetAPI, uploadCCStep3CardDetails } from "../store/CCStep3GetSlice";
 import { setCCStepsTF } from "../store/CCStepT_F_Slice";
 import { setCCStep3AddAPI } from "../store/CCStep3AddSlice";
 
@@ -105,7 +105,8 @@ export const CCStep3DeleteAPI = (deletePayload, id, cardState, { setCardState },
         // console.log(payload);
         axios.post("https://api-dev.medqwiz.com/v1/camp/card/image/delete", deletePayload, options)
             .then((res) => {
-                dispatch(deleteCCStep3CardDetails({ res, deletePayload, id }))
+                console.log("delete_api", { res, deletePayload, id });
+                dispatch(deleteCCStep3CardImage({ res, deletePayload, id }))
                 setCardState({ ...cardState, media: cardState?.media?.filter((medialist) => medialist?.id !== deletePayload?.id) })
                 console.log(res, deletePayload);
                 setLoader(false)
@@ -113,6 +114,28 @@ export const CCStep3DeleteAPI = (deletePayload, id, cardState, { setCardState },
             .catch(err => console.log(err))
     }
 }
+
+
+
+export const CCStep3DeleteCardAPI = (deleteCardPayload, cardId, { setLoader }) => {
+    return (dispatch) => {
+        const options = {
+            headers: {
+                Authorization: "Bearer " + localStorage.getItem("token")
+            }
+        }
+        setLoader(true)
+        // console.log(payload);
+        axios.put("https://api-dev.medqwiz.com/v1/camp/card/delete", deleteCardPayload, options)
+            .then((res) => {
+                console.log(res);
+                dispatch(deleteCCStep3Card({ res, deleteCardPayload, cardId }))
+            })
+            .catch(err => console.log(err))
+        setLoader(false)
+    }
+}
+
 export const CCStep3UploadAPI = (formData, id, cardState, { setCardState }, { setLoader }) => {
     return (dispatch) => {
         const options = {

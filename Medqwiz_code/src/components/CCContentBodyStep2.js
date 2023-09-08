@@ -10,6 +10,7 @@ import { CCStep3PostAPI, CCStepsTrueFalseAPI } from "../API/IndexAPIs";
 import { useState } from "react";
 import { BiArrowBack } from 'react-icons/bi';
 import { IoArrowForward } from 'react-icons/io5';
+import CCStep2API from '../API/CCStep2API';
 
 
 const selectRunTime = [
@@ -19,20 +20,15 @@ const selectRunTime = [
     { value: 4, label: "30 Days" },
 ];
 
-const CCContentBodyStep2 = () => {
+const CCContentBodyStep2 = ({params}) => {
 
     const CCStep2Data = useSelector((state) => state?.reducer?.CCStep2Slice);
     console.log(CCStep2Data);
 
-    // const CCStep3PostData = useSelector((state) => state?.reducer?.CCStep3PostData)
-    // console.log(CCStep3PostData)
-
     const CCStepsTFData = useSelector((state) => state?.reducer?.CCStepT_F_Slice)
     console.log(CCStepsTFData)
 
-    const CCStep3GetData = useSelector((state) => state?.reducer?.CCStep3GetSlice)
-
-    console.log(CCStep3GetData);
+    
 
     // useState
     const [runTimeDropdownState, setRunTimeDropdownState] = useState({
@@ -64,7 +60,7 @@ const CCContentBodyStep2 = () => {
         cardCampPharmaLogo: CCStep2Data?.PharmaLogo?.url,
     });
 
-    console.log(uploadS2File);
+    // console.log(uploadS2File);
     const [campaignCategory, setCampaignCategory] = useState({
         campaignCategory: CCStep2Data?.campRelatedTo,
     });
@@ -97,6 +93,7 @@ const CCContentBodyStep2 = () => {
         Step6: false,
     })
 
+
     // const [validState, setValidState] = useState({
     //     isValid: false
     // })
@@ -127,6 +124,10 @@ const CCContentBodyStep2 = () => {
             descInformationCharCount: CCStep2Data?.descInformation.length,
         }));
     }, [CCStep2Data]);
+
+    // useEffect(() => {
+    //     dispatch(CCStep2API(params?.id))
+    // }, [campaignDetailsData])
 
     useEffect(() => {
         setUploadS2File((prevState) => ({
@@ -188,12 +189,12 @@ const CCContentBodyStep2 = () => {
 
         if (formInteracted) {
             dispatch(CCStep3PostAPI(apiData));
-            // dispatch(CCStepsTrueFalseAPI({ ...steps, Step1: true }, apiData))
             dispatch(CCStepsTrueFalseAPI({ ...steps, Step1: true }, CCStep2Data))
+
         }
         else {
-            // dispatch(CCStepsTrueFalseAPI({ ...steps, Step1: true }, apiData))
             dispatch(CCStepsTrueFalseAPI({ ...steps, Step1: true }, CCStep2Data))
+
         }
     };
 
@@ -217,7 +218,7 @@ const CCContentBodyStep2 = () => {
             maxLength = 256;
         }
 
-     
+
         if (value.length <= maxLength) {
             setInputState((prevState) => ({
                 ...prevState,
@@ -233,8 +234,8 @@ const CCContentBodyStep2 = () => {
             //     ...prevState,
             //     [name]: isValid
             // }))
-    };
-}
+        };
+    }
 
     const handle_step2_upload = (event) => {
 
