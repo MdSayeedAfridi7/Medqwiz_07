@@ -181,8 +181,8 @@ const CCContentBodyStep3 = ({ params }) => {
         <div className="CC_Step3_body d-flex flex-fill bg_white rounded">
           <Row className="spinner_relative d-flex flex-fill p-3 bg_white rounded">
 
-            <Col sm={4} md={4} lg={2} className="d-flex flex-column light_violet">
-              <div className="CCStep3_sidebar d-flex felx-fill flex-column px-2">
+            <Col sm={4} md={4} lg={2} className="d-flex flex-column light_violet my-2">
+              <div className="CCStep3_sidebar d-flex flex-fill flex-column px-2">
                 <span className='mt-2'>Topics</span>
                 <div className="topics_tab mt-2" >
                   {CCStep3CardsData && (CCStep3CardsData.map((e, index) => {
@@ -201,7 +201,7 @@ const CCContentBodyStep3 = ({ params }) => {
               </div>
             </Col>
 
-            <Col sm={8} md={8} lg={6} className="d-flex flex-fill ps-sm-3">
+            <Col sm={8} md={8} lg={6} className="d-flex flex-fill ps-sm-3 my-2">
               <div className="CCStep3_main light_violet d-flex flex-column flex-fill p-3">
                 <span className='text_85'>Build Campaign</span>
                 {cardState === "" ? <SelectCardText /> :
@@ -472,7 +472,7 @@ const CCContentBodyStep3 = ({ params }) => {
 
               </div>
             </Col>
-            <Col lg={3} className="d-flex flex-fill ps-lg-3">
+            <Col lg={3} className="d-flex flex-fill ps-lg-3 my-2">
               <div className="CCStep3_card d-flex flex-fill flex-column light_violet p-3">
                 <span className='text_85'>Card Preview</span>
                 <p className='text_85 mt-2 violet_text_color'>This is how the campaign preview will appear for HCPs</p>
@@ -532,7 +532,7 @@ const CCContentBodyStep3 = ({ params }) => {
                               </div>
                             </PerfectScrollbar>
                           </div>)}
-                          {e?.type === "quote" && (<div className="side_card_notes border border-danger p-2 rounded ">
+                          {e?.type === "quote" && (<div className="fade_red border border-danger p-2 rounded ">
                             <p className='text-danger text_85'>{`"${e?.description === "" ? "Enter the quote" : e?.description}"`}</p>
                           </div>)}
                         </div>

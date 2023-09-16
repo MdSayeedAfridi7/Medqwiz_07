@@ -88,7 +88,7 @@ const CCContentStepsFlow = () => {
                 const Icon = icon[e.icon];
 
                 return (
-                    <>
+                    <div key={index}>
                         <div className="campaign_title_wrap d-flex ms-2 me-2 col">
                             <div className="campaign_flow_title d-flex pt-2 pb-2">
                                 <div className="cfFlow_title_icon d-flex justify-content-center align-items-center text-white pe-2 ps-2 rounded me-3">
@@ -108,7 +108,7 @@ const CCContentStepsFlow = () => {
                                 </div>
                             )}
                         </div>
-                    </>
+                    </div>
                 );
             })}
         </>

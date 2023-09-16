@@ -10,7 +10,7 @@ import CCContentHeader from './CCContentHeader';
 import CCContentStepsFlow from './CCContentStepsFlow';
 import CCContentBodyGameDetails from './CCContentBodyGameDetails';
 
-const CCStep2 = () => {
+const CCFlowParams = () => {
     const params = useParams()
     const dispatch = useDispatch()
     const campaignDetailsData = useSelector((state) => state?.reducer?.CCStep3PostSlice)
@@ -19,7 +19,8 @@ const CCStep2 = () => {
         dispatch(CCStep2API(params?.id))
     }, [params, campaignDetailsData])
 
-    console.log(params)
+
+    console.log("params", params)
  
     return (
         <>
@@ -44,5 +45,5 @@ const CCStep2 = () => {
 
 }
 
-export default CCStep2
+export default CCFlowParams
 
