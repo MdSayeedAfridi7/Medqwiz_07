@@ -3,7 +3,6 @@ import { useState } from 'react';
 import { Button, Card, CardText, CardTitle, Col, DropdownItem, DropdownMenu, DropdownToggle, FormGroup, Input, Label, Nav, NavItem, NavLink, Row, Spinner, TabContent, TabPane, UncontrolledDropdown } from 'reactstrap';
 import DataTable from 'react-data-table-component';
 import { useDispatch, useSelector } from 'react-redux';
-// import { setActiveCampaign } from '../store/ActiveCampaignSlice';
 import ActiveCampaignAPI from '../API/ActiveCampaignAPI';
 import moment from 'moment';
 import { MoreVertical, Search, Filter } from "react-feather"
@@ -99,7 +98,7 @@ const ActiveCampaignData = () => {
     },
     {
       name: 'CAMPAIGN NAME',
-      selector: "campName",
+      selector: "internalName",
       sortable: true,
     },
     {

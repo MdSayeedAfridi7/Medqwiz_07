@@ -5,7 +5,7 @@ import { BiArrowBack } from 'react-icons/bi';
 import { IoArrowForward, IoCloseOutline } from 'react-icons/io5';
 import { useDispatch, useSelector } from 'react-redux';
 import { useNavigate } from 'react-router-dom';
-import { CCStep3AddAPI, CCStep3DeleteAPI, CCStep3DeleteCardAPI, CCStep3GetAPI, CCStep3UploadAPI, CCStepsTrueFalseAPI } from '../API/IndexAPIs';
+import { CCPUT_UpdateAPI, CCStep3AddAPI, CCStep3DeleteAPI, CCStep3DeleteCardAPI, CCStep3GetAPI, CCStep3UploadAPI, CCStepsTrueFalseAPI } from '../API/IndexAPIs';
 import { useEffect } from 'react';
 import { RiDeleteBinLine } from "react-icons/ri"
 import quote_card from "../assets/quote_card.svg"
@@ -18,8 +18,9 @@ import step3_card_logo from "../assets/alergen.jpg"
 import benefits_img from "../assets/eye_with_drop.jpg"
 import img_slide_1 from "../assets/img_slide_1.webp"
 import CCStep2API from '../API/CCStep2API';
-import S3FormBodyWrap from './S3FormBodyWrap';
+import S3FormBodyWrap from './SelectCardText';
 import { setCCStep3GetAPI, setContextCardDetails } from '../store/CCStep3GetSlice';
+import SelectCardText from './SelectCardText';
 
 
 const CCContentBodyStep3 = ({ params }) => {
@@ -40,6 +41,8 @@ const CCContentBodyStep3 = ({ params }) => {
   const CCStep3AddData = useSelector((state) => state?.reducer?.CCStep3AddSlice)
   console.log(CCStep3AddData);
 
+
+
   // useDispatch
   const dispatch = useDispatch()
 
@@ -48,6 +51,19 @@ const CCContentBodyStep3 = ({ params }) => {
   const [cardState, setCardState] = useState("")
 
   const [loader, setLoader] = useState(true)
+
+  const steps = {
+    Step1: true,
+    Step2: true,
+    Step3: false,
+    Step4: false,
+    Step5: false,
+    Step6: false,
+  }
+
+  // useNavigate
+
+  const navigate = useNavigate()
 
   // useEffect
   useEffect(() => {
@@ -59,7 +75,12 @@ const CCContentBodyStep3 = ({ params }) => {
 
   useEffect(() => {
     dispatch(CCStep3GetAPI(params.id))
+
   }, [])
+
+  // useEffect(() => {
+  //   dispatch(CCStepsTrueFalseAPI({ ...CCStepsTFData, Step1: true }, CCStep2Data))
+  // }, [])
 
   useEffect(() => {
     if (CCStep2Data === null) {
@@ -83,9 +104,12 @@ const CCContentBodyStep3 = ({ params }) => {
     dispatch(setContextCardDetails({ ...cardState }))
   }, [cardState])
 
+  useEffect(() => {
+    if (CCStepsTFData && CCStepsTFData?.Step2 === true) {
+      navigate(`/campaignCreateFlow/${'step4'}/${CCStep2Data.id}`)
+    }
+  }, [CCStepsTFData?.Step2])
 
-  // useNavigate
-  const navigate = useNavigate()
 
   // const 
 
@@ -100,20 +124,18 @@ const CCContentBodyStep3 = ({ params }) => {
 
   // Topics
   const handleAddTopicCard = (title, type) => {
+    setLoader(true)
     dispatch(CCStep3AddAPI([{
       campId: CCStep2Data?.id?.toString(),
       order: CCStep3CardsData?.length + 1,
       title: title,
       type: type
-    }]))
-    
+    }], { setCardState }, { setLoader }
+    ))
   };
 
   console.log(cardState);
   console.log(CCStep3CardsData);
-  console.log(CCStep3CardsData.map((e) => {
-    return (e?.media)
-  }));
 
 
   // delete function
@@ -126,13 +148,15 @@ const CCContentBodyStep3 = ({ params }) => {
   // delete card function
 
   const handleDeleteCardFunction = (deleteCardPayload, cardId) => {
+    setLoader(true)
     console.log("delete_card_payload", deleteCardPayload, cardId);
-    dispatch(CCStep3DeleteCardAPI(deleteCardPayload, cardId, { setLoader }))
+    dispatch(CCStep3DeleteCardAPI(deleteCardPayload, cardId, { setLoader }, { setCardState }))
   }
 
   // handle upload
 
   const handel_slider_upload = (event, id) => {
+    setLoader(true)
     const { files } = event.target
     const formData = new FormData();
     formData.append("cardId", id);
@@ -143,18 +167,13 @@ const CCContentBodyStep3 = ({ params }) => {
 
   }
 
-  // A type of onChange input function.
+  const save_continue_card_details = () => {
+    setLoader(true)
+    dispatch(CCPUT_UpdateAPI(CCStep3CardsData, { setLoader }))
+    dispatch(CCStepsTrueFalseAPI({ ...steps }, CCStep2Data))
+  }
 
-  // const handleUploadFunction = (e) => {
-  //   const { name, value } = e.target
-  //   setCardState((prevState) => ({
-  //     ...prevState,
-  //     [name]: value
-  //   }))
-  // }
-
-
-
+  console.log(CCStep2Data?.id);
 
   return (
     <div>
@@ -162,13 +181,11 @@ const CCContentBodyStep3 = ({ params }) => {
         <div className="CC_Step3_body d-flex flex-fill bg_white rounded">
           <Row className="spinner_relative d-flex flex-fill p-3 bg_white rounded">
 
-            <Col sm={4} md={4} lg={2} className="d-flex  border border-dark flex-column light_violet">
-              <div className="CCStep3_sidebar d-flex felx-fill flex-column px-2">
+            <Col sm={4} md={4} lg={2} className="d-flex flex-column light_violet my-2">
+              <div className="CCStep3_sidebar d-flex flex-fill flex-column px-2">
                 <span className='mt-2'>Topics</span>
                 <div className="topics_tab mt-2" >
                   {CCStep3CardsData && (CCStep3CardsData.map((e, index) => {
-                    console.log(e?.id);
-                    console.log(cardState?.id);
                     return (
                       <>
                         <div className={`topic_tabs_divs bg_white p-2 fw-bold d-flex justify-content-start align-items-center rounded my-2 border_grey cursor_pointer 
@@ -184,242 +201,245 @@ const CCContentBodyStep3 = ({ params }) => {
               </div>
             </Col>
 
-            <Col sm={8} md={8} lg={6} className="d-flex flex-fill  border border-dark ps-sm-3">
-              <div className="CCStep3_main light_violet d-flex flex-column border border-dark flex-fill p-3">
+            <Col sm={8} md={8} lg={6} className="d-flex flex-fill ps-sm-3 my-2">
+              <div className="CCStep3_main light_violet d-flex flex-column flex-fill p-3">
                 <span className='text_85'>Build Campaign</span>
-                {/* <S3FormBodyWrap /> */}
-                <div className="step3_form_wrap bg_white rounded d-flex flex-column mt-2 spinner_relative">
-                  <Spinner className={`spinner_absolute ${loader ? "d-flex" : "d-none"}`}>
-                    Loading...
-                  </Spinner>
+                {cardState === "" ? <SelectCardText /> :
+                  <div>
+                    <div className="step3_form_wrap bg_white rounded d-flex flex-column mt-2 spinner_relative">
+                      <Spinner className={`spinner_absolute ${loader ? "d-flex" : "d-none"}`}>
+                        Loading...
+                      </Spinner>
 
 
-                  {cardState.type === "textbox" && (
-                    <>
-                      <div className="build_campaign_header d-flex justify-content-between p-3 bg_white rounded-top pb-2">
-                        <div className="about_header_name">
-                          <span className='text_100'>{cardState?.type} Card</span>
-                        </div>
-                        <div className="about_header_delete_btn text_125">
-                          <RiDeleteBinLine className="cursor_pointer" onClick={() => handleDeleteCardFunction([cardState], cardState?.id)} />
-                        </div>
-                      </div>
-                      <div className="about_form_field d-flex flex-column p-3 bg_white rounded-bottom">
-                        <div className="about_card_title d-flex flex-column">
-                          <p className='text_75'>Enter the card Title <span className='text-danger'>*</span></p>
-                          <Input
-                            type="text"
-                            className='text_85 inputFocus border border-secondary-subtle  mb-2'
-                            value={cardState?.title}
-                            onChange={(e) => setCardState({ ...cardState, title: e?.target?.value })}
-                            name="title"
-                          />
-                        </div>
-                        <div className="about_decription">
-                          <p className='text_75'>Description <span className='text-danger'>*</span></p>
-                          <Input
-                            type='textarea'
-                            row={3}
-                            className='text_85 inputFocus border border-secondary-subtle mb-2'
-                            value={cardState?.description}
-                            onChange={(e) => setCardState({ ...cardState, description: e?.target?.value })}
-                            name="description"
-                          />
-                        </div>
-                        <div className="about_tag">
-                          <p className='text_75'>Tag <span className='text-danger'>*</span></p>
-                          <Input
-                            type='text'
-                            className='text_85 inputFocus border border-secondary-subtle mb-2'
-                            value={cardState?.tag}
-                            onChange={(e) => setCardState({ ...cardState, tag: e?.target?.value })}
-                            name="tag"
-                          />
-                        </div>
-                        <div className="about_reference">
-                          <p className='text_75'>Reference <span className='text-danger'>*</span></p>
-                          <Input
-                            className='text_85 inputFocus border border-secondary-subtle mb-2'
-                            value={cardState?.reference}
-                            onChange={(e) => setCardState({ ...cardState, reference: e?.target?.value })}
-                            name="reference"
-                          />
-                        </div>
-                      </div>
-                    </>
-                  )}
-                  {cardState?.type === "mediabox" && (
-                    <>
-                      <div className="build_campaign_header d-flex justify-content-between p-3 bg_white rounded-top pb-2">
-                        <div className="about_header_name">
-                          <span className='text_100'>{cardState?.type} Card</span>
-                        </div>
-                        <div className="about_header_delete_btn text_125">
-                          <RiDeleteBinLine className="cursor_pointer" onClick={() => handleDeleteCardFunction([cardState], cardState?.id)} />
-                        </div>
-                      </div>
-                      <div className="about_form_field d-flex flex-column p-3 bg_white rounded-bottom">
-                        <div className="about_card_title d-flex flex-column">
-                          <p className='text_75'>Enter the card Title <span className='text-danger'>*</span></p>
-                          <Input
-                            type="text"
-                            className='text_85 inputFocus border border-secondary-subtle  mb-2'
-                            value={cardState?.title}
-                            onChange={(e) => setCardState({ ...cardState, title: e?.target?.value })}
-                          />
-                        </div>
-                        <div className="about_decription">
-                          <p className='text_75'>Description <span className='text-danger'>*</span></p>
-                          <Input
-                            type='textarea'
-                            row={3}
-                            className='text_85 inputFocus border border-secondary-subtle mb-2'
-                            value={cardState?.description}
-                            onChange={(e) => setCardState({ ...cardState, description: e?.target?.value })}
-                          />
-                        </div>
-                        <div className="about_tag">
-                          <p className='text_75'>Tag <span className='text-danger'>*</span></p>
-                          <Input
-                            type='text'
-                            className='text_85 inputFocus border border-secondary-subtle mb-2'
-                            value={cardState?.tag}
-                            onChange={(e) => setCardState({ ...cardState, tag: e?.target?.value })}
-                          />
-                        </div>
-                        <div className="about_reference">
-                          <p className='text_75'>Reference <span className='text-danger'>*</span></p>
-                          <Input
-                            className='text_85 inputFocus border border-secondary-subtle mb-2'
-                            value={cardState?.reference}
-                            onChange={(e) => setCardState({ ...cardState, reference: e?.target?.value })}
-                          />
-                        </div>
-                        <div className="mediabox_image_video">
-                          <p className='text_75'>Select Image or Video  <span className='text-danger'>*</span></p>
-                          {cardState?.media[0]?.path ?
-                            <InputGroup>
-                              <Input placeholder="" className='inputFocus' value={cardState?.media[0]?.path} />
-                              <InputGroupText className='p-0'>
-                                <Button className='px-3 py-1 bg_white text-dark' onClick={() => handleDeleteFunction(cardState?.media[0], cardState?.id)}>
-                                  <IoCloseOutline />
-                                </Button >
-                              </InputGroupText>
-                            </InputGroup>
-                            : <Input
-                              type='file'
-                              className='text_85 inputFocus border border-secondary-subtle mb-2' Card
-                              onChange={(e) => { handel_slider_upload(e, cardState?.id) }}
-                            />}
-
-                        </div>
-
-                      </div>
-                    </>
-                  )}
-                  {cardState?.type === "slider" && (
-                    <>
-                      <div className="build_campaign_header d-flex justify-content-between p-3 bg_white rounded-top pb-2">
-                        <div className="about_header_name">
-                          <span className='text_100'>{cardState?.type} Card</span>
-                        </div>
-                        <div className="about_header_delete_btn text_125">
-                          <RiDeleteBinLine className="cursor_pointer" onClick={() => handleDeleteCardFunction([cardState], cardState?.id)} />
-                        </div>
-                      </div>
-                      <div className="slider_form bg_white d-flex flex-column p-3">
-                        <div className="slider_form_file_selection d-flex flex-column">
-                          <p className='text_75'>Select First Image <span className='text-danger'>*</span></p>
-                          {
-                            cardState?.media[0]?.path ?
-                              <InputGroup>
-                                <Input placeholder="" className='inputFocus' value={cardState?.media[0]?.path} />
-                                <InputGroupText className='p-0'>
-                                  <Button className='px-3 py-1 bg_white text-dark' onClick={() => handleDeleteFunction(cardState?.media[0], cardState?.id)}>
-                                    <IoCloseOutline />
-                                  </Button >
-                                </InputGroupText>
-                              </InputGroup>
-                              :
+                      {cardState.type === "textbox" && (
+                        <>
+                          <div className="build_campaign_header d-flex justify-content-between p-3 bg_white rounded-top pb-2">
+                            <div className="about_header_name">
+                              <span className='text_100'>{cardState?.type} Card</span>
+                            </div>
+                            <div className="about_header_delete_btn text_125">
+                              <RiDeleteBinLine className="cursor_pointer" onClick={() => handleDeleteCardFunction([cardState], cardState?.id)} />
+                            </div>
+                          </div>
+                          <div className="about_form_field d-flex flex-column p-3 bg_white rounded-bottom">
+                            <div className="about_card_title d-flex flex-column">
+                              <p className='text_75'>Enter the card Title <span className='text-danger'>*</span></p>
                               <Input
-                                type="file"
-                                className='text_85 inputFocus border border-secondary-subtle  mb-2 text_85'
-                                onChange={(e) => { handel_slider_upload(e, cardState?.id) }}
-                                name='slider_upload_1'
+                                type="text"
+                                className='text_85 inputFocus border border-secondary-subtle  mb-2'
+                                value={cardState?.title}
+                                onChange={(e) => setCardState({ ...cardState, title: e?.target?.value })}
+                                name="title"
                               />
-                          }
-                        </div>
-                        <div className="slider_form_file_selection d-flex flex-column">
-                          <p className='text_75'>Select Second Image <span className='text-danger'>*</span></p>
-                          {cardState?.media[1]?.path ?
-                            <InputGroup>
-                              <Input placeholder="" className='inputFocus' value={cardState?.media[1]?.path} />
-                              <InputGroupText className='p-0'>
-                                <Button className='px-3 py-1 bg_white text-dark' onClick={() => handleDeleteFunction(cardState?.media[1], cardState?.id)} >
-                                  <IoCloseOutline />
-                                </Button>
-                              </InputGroupText>
-                            </InputGroup>
-                            :
-                            <Input
-                              type="file"
-                              className='text_85 inputFocus border border-secondary-subtle  mb-2 text_85'
-                              onChange={(e) => { handel_slider_upload(e, cardState?.id) }}
-                              name='slider_upload_2'
-                            />
-                          }
+                            </div>
+                            <div className="about_decription">
+                              <p className='text_75'>Description <span className='text-danger'>*</span></p>
+                              <Input
+                                type='textarea'
+                                row={3}
+                                className='text_85 inputFocus border border-secondary-subtle mb-2'
+                                value={cardState?.description}
+                                onChange={(e) => setCardState({ ...cardState, description: e?.target?.value })}
+                                name="description"
+                              />
+                            </div>
+                            <div className="about_tag">
+                              <p className='text_75'>Tag <span className='text-danger'>*</span></p>
+                              <Input
+                                type='text'
+                                className='text_85 inputFocus border border-secondary-subtle mb-2'
+                                value={cardState?.tag}
+                                onChange={(e) => setCardState({ ...cardState, tag: e?.target?.value })}
+                                name="tag"
+                              />
+                            </div>
+                            <div className="about_reference">
+                              <p className='text_75'>Reference <span className='text-danger'>*</span></p>
+                              <Input
+                                className='text_85 inputFocus border border-secondary-subtle mb-2'
+                                value={cardState?.reference}
+                                onChange={(e) => setCardState({ ...cardState, reference: e?.target?.value })}
+                                name="reference"
+                              />
+                            </div>
+                          </div>
+                        </>
+                      )}
+                      {cardState?.type === "mediabox" && (
+                        <>
+                          <div className="build_campaign_header d-flex justify-content-between p-3 bg_white rounded-top pb-2">
+                            <div className="about_header_name">
+                              <span className='text_100'>{cardState?.type} Card</span>
+                            </div>
+                            <div className="about_header_delete_btn text_125">
+                              <RiDeleteBinLine className="cursor_pointer" onClick={() => handleDeleteCardFunction([cardState], cardState?.id)} />
+                            </div>
+                          </div>
+                          <div className="about_form_field d-flex flex-column p-3 bg_white rounded-bottom">
+                            <div className="about_card_title d-flex flex-column">
+                              <p className='text_75'>Enter the card Title <span className='text-danger'>*</span></p>
+                              <Input
+                                type="text"
+                                className='text_85 inputFocus border border-secondary-subtle  mb-2'
+                                value={cardState?.title}
+                                onChange={(e) => setCardState({ ...cardState, title: e?.target?.value })}
+                              />
+                            </div>
+                            <div className="about_decription">
+                              <p className='text_75'>Description <span className='text-danger'>*</span></p>
+                              <Input
+                                type='textarea'
+                                row={3}
+                                className='text_85 inputFocus border border-secondary-subtle mb-2'
+                                value={cardState?.description}
+                                onChange={(e) => setCardState({ ...cardState, description: e?.target?.value })}
+                              />
+                            </div>
+                            <div className="about_tag">
+                              <p className='text_75'>Tag <span className='text-danger'>*</span></p>
+                              <Input
+                                type='text'
+                                className='text_85 inputFocus border border-secondary-subtle mb-2'
+                                value={cardState?.tag}
+                                onChange={(e) => setCardState({ ...cardState, tag: e?.target?.value })}
+                              />
+                            </div>
+                            <div className="about_reference">
+                              <p className='text_75'>Reference <span className='text-danger'>*</span></p>
+                              <Input
+                                className='text_85 inputFocus border border-secondary-subtle mb-2'
+                                value={cardState?.reference}
+                                onChange={(e) => setCardState({ ...cardState, reference: e?.target?.value })}
+                              />
+                            </div>
+                            <div className="mediabox_image_video">
+                              <p className='text_75'>Select Image or Video  <span className='text-danger'>*</span></p>
+                              {cardState?.media[0]?.path ?
+                                <InputGroup>
+                                  <Input placeholder="" className='inputFocus' value={cardState?.media[0]?.path} />
+                                  <InputGroupText className='p-0'>
+                                    <Button className='px-3 py-1 bg_white text-dark' onClick={() => handleDeleteFunction(cardState?.media[0], cardState?.id)}>
+                                      <IoCloseOutline />
+                                    </Button >
+                                  </InputGroupText>
+                                </InputGroup>
+                                : <Input
+                                  type='file'
+                                  className='text_85 inputFocus border border-secondary-subtle mb-2' Card
+                                  onChange={(e) => { handel_slider_upload(e, cardState?.id) }}
+                                />}
+
+                            </div>
+
+                          </div>
+                        </>
+                      )}
+                      {cardState?.type === "slider" && (
+                        <>
+                          <div className="build_campaign_header d-flex justify-content-between p-3 bg_white rounded-top pb-2">
+                            <div className="about_header_name">
+                              <span className='text_100'>{cardState?.type} Card</span>
+                            </div>
+                            <div className="about_header_delete_btn text_125">
+                              <RiDeleteBinLine className="cursor_pointer" onClick={() => handleDeleteCardFunction([cardState], cardState?.id)} />
+                            </div>
+                          </div>
+                          <div className="slider_form bg_white d-flex flex-column p-3">
+                            <div className="slider_form_file_selection d-flex flex-column">
+                              <p className='text_75'>Select First Image <span className='text-danger'>*</span></p>
+                              {
+                                cardState?.media[0]?.path ?
+                                  <InputGroup>
+                                    <Input placeholder="" className='inputFocus' value={cardState?.media[0]?.path} />
+                                    <InputGroupText className='p-0'>
+                                      <Button className='px-3 py-1 bg_white text-dark' onClick={() => handleDeleteFunction(cardState?.media[0], cardState?.id)}>
+                                        <IoCloseOutline />
+                                      </Button >
+                                    </InputGroupText>
+                                  </InputGroup>
+                                  :
+                                  <Input
+                                    type="file"
+                                    className='text_85 inputFocus border border-secondary-subtle  mb-2 text_85'
+                                    onChange={(e) => { handel_slider_upload(e, cardState?.id) }}
+                                    name='slider_upload_1'
+                                  />
+                              }
+                            </div>
+                            <div className="slider_form_file_selection d-flex flex-column">
+                              <p className='text_75'>Select Second Image <span className='text-danger'>*</span></p>
+                              {cardState?.media[1]?.path ?
+                                <InputGroup>
+                                  <Input placeholder="" className='inputFocus' value={cardState?.media[1]?.path} />
+                                  <InputGroupText className='p-0'>
+                                    <Button className='px-3 py-1 bg_white text-dark' onClick={() => handleDeleteFunction(cardState?.media[1], cardState?.id)} >
+                                      <IoCloseOutline />
+                                    </Button>
+                                  </InputGroupText>
+                                </InputGroup>
+                                :
+                                <Input
+                                  type="file"
+                                  className='text_85 inputFocus border border-secondary-subtle  mb-2 text_85'
+                                  onChange={(e) => { handel_slider_upload(e, cardState?.id) }}
+                                  name='slider_upload_2'
+                                />
+                              }
 
 
-                        </div>
-                        <div className="slider_form_file_selection d-flex flex-column">
-                          <p className='text_75'>Select third Image <span className='text-danger'>*</span></p>
-                          {cardState?.media[2]?.path ?
-                            <InputGroup>
-                              <Input placeholder="" className='inputFocus' value={cardState?.media[2]?.path} />
-                              <InputGroupText className='p-0'>
-                                <Button className='px-3 py-1 bg_white text-dark' onClick={() => handleDeleteFunction(cardState?.media[2], cardState?.id)}>
-                                  <IoCloseOutline />
-                                </Button>
-                              </InputGroupText>
-                            </InputGroup>
-                            :
-                            <Input
-                              type="file"
-                              className='text_85 inputFocus border border-secondary-subtle  mb-2 text_85'
-                              onChange={(e) => { handel_slider_upload(e, cardState?.id) }}
-                              name='slider_upload_3'
-                            />
-                          }
-                        </div>
-                      </div>
-                    </>
-                  )}
-                  {cardState?.type === "quote" && (
-                    <>
-                      <div className="build_campaign_header d-flex justify-content-between p-3 bg_white rounded-top pb-2">
-                        <div className="about_header_name">
-                          <span className='text_100'>{cardState?.type} Card</span>
-                        </div>
-                        <div className="about_header_delete_btn text_125">
-                          <RiDeleteBinLine className="cursor_pointer" onClick={() => handleDeleteCardFunction([cardState], cardState?.id)} />
-                        </div>
-                      </div>
-                      <div className="quote_form bg_white p-3">
-                        <div className="quote_card">
-                          <p className='text_75'>Enter the Quote <span className='text-danger'>*</span></p>
-                          <Input
-                            type='textarea'
-                            rows="5"
-                            className='text_85 inputFocus border border-secondary-subtle mb-2'
-                            value={cardState?.description}
-                            onChange={(e) => setCardState({ ...cardState, description: e?.target?.value })}
-                          />
-                        </div>
-                      </div>
-                    </>
-                  )}
+                            </div>
+                            <div className="slider_form_file_selection d-flex flex-column">
+                              <p className='text_75'>Select third Image <span className='text-danger'>*</span></p>
+                              {cardState?.media[2]?.path ?
+                                <InputGroup>
+                                  <Input placeholder="" className='inputFocus' value={cardState?.media[2]?.path} />
+                                  <InputGroupText className='p-0'>
+                                    <Button className='px-3 py-1 bg_white text-dark' onClick={() => handleDeleteFunction(cardState?.media[2], cardState?.id)}>
+                                      <IoCloseOutline />
+                                    </Button>
+                                  </InputGroupText>
+                                </InputGroup>
+                                :
+                                <Input
+                                  type="file"
+                                  className='text_85 inputFocus border border-secondary-subtle  mb-2 text_85'
+                                  onChange={(e) => { handel_slider_upload(e, cardState?.id) }}
+                                  name='slider_upload_3'
+                                />
+                              }
+                            </div>
+                          </div>
+                        </>
+                      )}
+                      {cardState?.type === "quote" && (
+                        <>
+                          <div className="build_campaign_header d-flex justify-content-between p-3 bg_white rounded-top pb-2">
+                            <div className="about_header_name">
+                              <span className='text_100'>{cardState?.type} Card</span>
+                            </div>
+                            <div className="about_header_delete_btn text_125">
+                              <RiDeleteBinLine className="cursor_pointer" onClick={() => handleDeleteCardFunction([cardState], cardState?.id)} />
+                            </div>
+                          </div>
+                          <div className="quote_form bg_white p-3">
+                            <div className="quote_card">
+                              <p className='text_75'>Enter the Quote <span className='text-danger'>*</span></p>
+                              <Input
+                                type='textarea'
+                                rows="5"
+                                className='text_85 inputFocus border border-secondary-subtle mb-2'
+                                value={cardState?.description}
+                                onChange={(e) => setCardState({ ...cardState, description: e?.target?.value })}
+                              />
+                            </div>
+                          </div>
+                        </>
+                      )}
 
-                </div>
+                    </div>
+                  </div>}
+
 
 
                 <div className="add_new_topic d-flex flex-column align-items-center mt-3">
@@ -452,8 +472,8 @@ const CCContentBodyStep3 = ({ params }) => {
 
               </div>
             </Col>
-            <Col lg={3} className="d-flex flex-fill  border border-dark ps-lg-3">
-              <div className="CCStep3_card d-flex flex-fill flex-column border border-dark light_violet p-3">
+            <Col lg={3} className="d-flex flex-fill ps-lg-3 my-2">
+              <div className="CCStep3_card d-flex flex-fill flex-column light_violet p-3">
                 <span className='text_85'>Card Preview</span>
                 <p className='text_85 mt-2 violet_text_color'>This is how the campaign preview will appear for HCPs</p>
                 <PerfectScrollbar className='step3_side_scroll_y'>
@@ -504,16 +524,16 @@ const CCContentBodyStep3 = ({ params }) => {
                             <PerfectScrollbar>
                               <div className="step3_card_slides_div d-flex my-3 border border-secondary-subtle rounded">
                                 {e?.media?.map((i) => {
-                                  console.log("image", i);
+                                  // console.log("image", i);
                                   return (
-                                    <img src={i?.links?.url} alt="" className='img-fluid border border-black rounded me-2' />
+                                    <img src={i?.links?.url} alt="" className='card_Slider_images img-fluid border border-secondary-subtle rounded me-2' />
                                   )
                                 })}
                               </div>
                             </PerfectScrollbar>
                           </div>)}
-                          {e?.type === "quote" && (<div className="side_card_notes border border-danger p-2 rounded ">
-                            <p className='text-danger text_85'>{`"${e?.description === ""? "Enter the quote": e?.description}"`}</p>
+                          {e?.type === "quote" && (<div className="fade_red border border-danger p-2 rounded ">
+                            <p className='text-danger text_85'>{`"${e?.description === "" ? "Enter the quote" : e?.description}"`}</p>
                           </div>)}
                         </div>
                       )
@@ -526,10 +546,10 @@ const CCContentBodyStep3 = ({ params }) => {
           </Row>
         </div>
         <div className="cc_step2_content_footer border-top border-secondary pt-3 pb-3 d-flex justify-content-between">
-          <Button className="ms-5" onClick={handleCCStep3Back}>
-            <BiArrowBack /> Previous
+          <Button className="ms-5 text_85" onClick={handleCCStep3Back}>
+            <BiArrowBack className='text_85'/> Previous
           </Button>
-          <Button className="me-5" onClick={handleStep3}>
+          <Button className="me-5 text_85" onClick={save_continue_card_details}>
             Save and Continue <IoArrowForward />
           </Button>
         </div>

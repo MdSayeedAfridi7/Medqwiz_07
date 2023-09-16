@@ -312,6 +312,9 @@ code {
   background-color: #f6f6f6;
 }
 
+.cursor_not_allowed {
+  cursor: not-allowed !important;
+}
 
 /* Row */
 
@@ -602,7 +605,7 @@ code {
 
 /* step3 */
 .CCStep3_sidebar {
-  background-color: #e6dcf3 !important;
+  background-color: #eeeaf3 !important;
   font-size: 0.85rem !important;
 }
 
@@ -635,12 +638,17 @@ code {
   font-size: .85rem !important
 }
 
+/* colors */
 .light_violet {
-  background-color: #e6dcf3 !important;
+  background-color: #eeeaf3 !important;
 }
 
 .violet_text_color {
   color: #77529f !important;
+}
+
+.text_mid_violet {
+  color: #5d5772 !important;
 }
 
 .bg_white {
@@ -653,6 +661,12 @@ code {
 
 .dark_violet_bg {
   background-color: #77529f !important;
+}
+
+.fade_green{
+  background-color: #e5f8ed !important;
+  border: 1px solid #57d38e !important;
+  color: #57d38e !important;
 }
 
 .S3_add_topic_col {
@@ -711,12 +725,21 @@ code {
   min-height: 7rem;
 }
 
+.card_Slider_images {
+  /* min-height: 7rem !important ; */
+  /* max-height: 7rem !important ; */
+  /* min-width: 10rem !important ; */
+  /* max-width: 12rem !important ; */
+}
+
 .step3_card_slides_div img {}
 
 /* side_card_notes */
 
-.side_card_notes {
-  background-color: rgba(255, 0, 0, 0.1);
+.fade_red {
+  color: red !important;
+  background-color: rgba(255, 0, 0, 0.1) !important;
+  border: 1px solid red;
 }
 
 .bd_transparent_red {
@@ -789,6 +812,56 @@ code {
   border-color: rebeccapurple !important;
   border-right-color: transparent !important;
 }
+
+
+/*select_card_component*/
+.select_card_component {
+  min-height: 26rem !important;
+}
+
+
+/* game details */
+.four_games_outline div:nth-child(4) p {
+  background-color: #f8f8f8;
+}
+
+.game_details_footer button {
+  background-color: #77529f !important;
+}
+
+/* trivia game */
+
+
+.trivia_game_main {
+  min-height: 28rem !important;
+}
+
+.trivia_side_body {
+  background-color: #f6f6f6 !important;
+  min-height: 28rem !important;
+}
+
+.trivia_body_inner {
+  min-height: 26rem !important;
+}
+
+.activate_div {
+  border: 1px solid #77529f;
+}
+
+.question_card_details {
+  min-height: 28rem !important;
+}
+
+/* --bs-dropdown-min-width: 0rem; */
+
+.trivia_dropdown_boolean .dropdown-menu {
+  --bs-dropdown-min-width: 0rem !important;
+}
+
+
+
+
 
 /* Media queries */
 

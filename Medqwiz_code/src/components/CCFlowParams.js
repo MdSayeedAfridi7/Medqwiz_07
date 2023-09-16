@@ -1,17 +1,16 @@
 import React from 'react'
 import { useParams } from 'react-router-dom'
-import CCFStep2 from './CCFStep2';
 import { useDispatch, useSelector } from 'react-redux';
 import CCStep2API from '../API/CCStep2API';
 import { useEffect } from 'react';
-import { CCStep3GetAPI } from '../API/IndexAPIs';
 import CCContentBodyStep2 from './CCContentBodyStep2';
 import CCContentBodyStep3 from './CCContentBodyStep3';
 import { Col, Row } from 'reactstrap';
 import CCContentHeader from './CCContentHeader';
 import CCContentStepsFlow from './CCContentStepsFlow';
+import CCContentBodyGameDetails from './CCContentBodyGameDetails';
 
-const CCStep2 = () => {
+const CCFlowParams = () => {
     const params = useParams()
     const dispatch = useDispatch()
     const campaignDetailsData = useSelector((state) => state?.reducer?.CCStep3PostSlice)
@@ -20,7 +19,8 @@ const CCStep2 = () => {
         dispatch(CCStep2API(params?.id))
     }, [params, campaignDetailsData])
 
-    console.log(params)
+
+    console.log("params", params)
  
     return (
         <>
@@ -32,8 +32,10 @@ const CCStep2 = () => {
                     <CCContentStepsFlow />
                 </Col>
                 <Col className="ccf_main_content d-flex border border-dark flex-column">
-                    {params.step === "step2" && <CCContentBodyStep2 params={params}/>}
+                    {params.step === "step2" && <CCContentBodyStep2 />}
                     {params.step === "step3" && <CCContentBodyStep3 params={params}/>}
+                    {params.step === "step4" && <CCContentBodyGameDetails params={params}/>}
+                    
                 </Col>
             </Row>
 
@@ -43,5 +45,5 @@ const CCStep2 = () => {
 
 }
 
-export default CCStep2
+export default CCFlowParams
 
